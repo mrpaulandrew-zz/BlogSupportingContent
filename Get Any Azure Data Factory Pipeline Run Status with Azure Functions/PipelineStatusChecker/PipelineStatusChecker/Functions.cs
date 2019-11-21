@@ -110,7 +110,7 @@ namespace PipelineStatusChecker
                 pipelineRuns = enumerator.Current;
                 hasMoreRuns = enumerator.MoveNext();
 
-                if(!hasMoreRuns && pipelineRuns.PipelineName == pipelineName) //&& just incase, filter above should deal with this
+                if(!hasMoreRuns && pipelineRuns.PipelineName == pipelineName) 
                 {
                     //Get status for run id
                     runId = pipelineRuns.RunId;
