@@ -4,6 +4,10 @@ All sorts of things supporting various blog posts... Sub folders per blog post t
 
 In blog post date order, with the latest post first:
 
+- [Get Any Azure Data Factory Pipeline Run Status with Azure Functions]()
+
+- [Azure Data Factory - Pipeline Hierarchies (Generation Control)](https://mrpaulandrew.com/2019/09/25/azure-data-factory-pipeline-hierarchies-generation-control/)
+
 - [Interacting with SQL Server 2019 Big Data Clusters](https://mrpaulandrew.com/2018/11/16/interacting-with-sql-server-2019-big-data-clusters/)
 
 - [Using Data Factory Parameterised Linked Services](https://mrpaulandrew.com/2018/11/15/using-data-factory-parameterised-linked-services/)

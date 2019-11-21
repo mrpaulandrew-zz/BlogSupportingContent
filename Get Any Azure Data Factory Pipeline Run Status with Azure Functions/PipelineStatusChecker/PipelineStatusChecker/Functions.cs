@@ -13,6 +13,7 @@ using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Azure.Management.DataFactory.Models;
 using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace PipelineStatusChecker
 {
@@ -78,6 +79,8 @@ namespace PipelineStatusChecker
             PipelineRun pipelineRuns; //used to find latest pipeline run id
             PipelineRun pipelineRun;  //used to get the status of the last pipeline
             string pipelineStatus = String.Empty;
+            string runId = String.Empty;
+            string outputString;
             DateTime today = DateTime.Now;
             DateTime lastWeek = DateTime.Now.AddDays(-daysOfRuns);
 
@@ -89,11 +92,13 @@ namespace PipelineStatusChecker
             IList<string> pipelineList = new List<string> { pipelineName };
             IList<RunQueryFilter> moreParams = new List<RunQueryFilter>();
 
-            moreParams.Add(new RunQueryFilter { Operand = RunQueryFilterOperand.PipelineName,
-                                                OperatorProperty = RunQueryFilterOperator.Equals,
-                                                Values = pipelineList
-                                                });
- 
+            moreParams.Add(new RunQueryFilter
+            {
+                Operand = RunQueryFilterOperand.PipelineName,
+                OperatorProperty = RunQueryFilterOperator.Equals,
+                Values = pipelineList
+            });
+
             RunFilterParameters filterParams = new RunFilterParameters(lastWeek, today, null, moreParams, null);
 
             var requiredRuns = client.PipelineRuns.QueryByFactory(resourceGroup, factoryName, filterParams);
@@ -108,12 +113,16 @@ namespace PipelineStatusChecker
                 if(!hasMoreRuns && pipelineRuns.PipelineName == pipelineName) //&& just incase, filter above should deal with this
                 {
                     //Get status for run id
-                    pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, pipelineRuns.RunId);
-                    pipelineStatus = pipelineRun.Status;
+                    runId = pipelineRuns.RunId;
+                    pipelineStatus = client.PipelineRuns.Get(resourceGroup, factoryName, runId).Status;
                 }
             }
 
-            return new OkObjectResult($"{pipelineStatus}");
+            //Prepare output
+            outputString = "{ \"PipelineName\": \"" + pipelineName + "\", \"RunIdUsed\": \"" + runId + "\", \"Status\": \"" + pipelineStatus + "\" }";
+            JObject json = JObject.Parse(outputString);
+
+            return new OkObjectResult(json);
         }
     }
 
@@ -179,11 +188,16 @@ namespace PipelineStatusChecker
             //Get pipeline status with provided run id
             PipelineRun pipelineRun;
             string pipelineStatus = String.Empty;
+            string outputString;
 
             pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
             pipelineStatus = pipelineRun.Status;
 
-            return new OkObjectResult($"{pipelineStatus}");
+            //Prepare output
+            outputString = "{ \"PipelineName\": \"" + pipelineName + "\", \"RunIdUsed\": \"" + runId + "\", \"Status\": \"" + pipelineRun.Status + "\" }";
+            JObject json = JObject.Parse(outputString);
+
+            return new OkObjectResult(json);
         }
     }
 
@@ -251,6 +265,7 @@ namespace PipelineStatusChecker
             ActivityRunsQueryResponse queryResponse; //used if not successful
             string runId = String.Empty;
             string errorDetails = String.Empty;
+            string outputString;
             DateTime today = DateTime.Now;
             DateTime lastWeek = DateTime.Now.AddDays(-daysOfRuns);
 
@@ -312,8 +327,12 @@ namespace PipelineStatusChecker
                 errorDetails = queryResponse.Value.First().Error.ToString();
             }
 
+            //Prepare output
+            outputString = "{ \"PipelineName\": \"" + pipelineName + "\", \"RunIdUsed\": \"" + runId + "\", \"Status\": \"" + pipelineRun.Status + "\" }";
+            JObject json = JObject.Parse(outputString);
+
             return pipelineRun.Status == "Succeeded" 
-                ? (ActionResult)new OkObjectResult($"{pipelineRun.Status}")
+                ? (ActionResult)new OkObjectResult(json)
                 : new BadRequestObjectResult($"{errorDetails}");
         }
     }
