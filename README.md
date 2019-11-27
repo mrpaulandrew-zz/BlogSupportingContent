@@ -4,7 +4,7 @@ All sorts of things supporting various blog posts... Sub folders per blog post t
 
 In blog post date order, with the latest post first:
 
-- [Get Any Azure Data Factory Pipeline Run Status with Azure Functions]()
+- [Get Any Azure Data Factory Pipeline Run Status with Azure Functions](https://mrpaulandrew.com/2019/11/21/get-any-azure-data-factory-pipeline-run-status-with-azure-functions/)
 
 - [Azure Data Factory - Pipeline Hierarchies (Generation Control)](https://mrpaulandrew.com/2019/09/25/azure-data-factory-pipeline-hierarchies-generation-control/)
 
